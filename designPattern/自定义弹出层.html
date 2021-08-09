@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        .tip {
+            width: 500px;
+            height: 300px;
+            border: 1px solid #333;
+            /* 永远处在屏幕最中间 */
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            margin: auto;
+            background-color: #fff;
+            display: none;
+        }
+
+        .tip>.top {
+            background-color: pink;
+            height: 20px;
+            padding: 10px;
+        }
+
+        .tip>.top>span {
+            float: right;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            cursor: pointer;
+            background-color: #fff;
+            font-size: 16px;
+            text-align: center;
+            line-height: 20px;
+        }
+
+        .tip>.container {
+            height: 200px;
+            text-align: center;
+            line-height: 30px;
+            font-size: 20px;
+        }
+
+        .tip>.btns {
+            height: 20px;
+            padding: 10px;
+            background-color: pink;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- <div class="tip">
+        <div class="top">标题
+            <span>x</span>
+        </div>
+        <div class="container">
+            <p>提示内容</p>
+        </div>
+        <div class="btns">
+            <button class="confirm">确定</button>
+            <button class="concel">取消</button>
+        </div>
+    </div> -->
+    <script>
+        const Tip = (function () {
+            class Tip {
+                constructor() {
+                    // 最外层的div标签
+                    this.ele = document.createElement('div')
+                    this.ele.className = 'tip'
+                    document.body.append(this.ele)
+                    this.callback = function() {}
+                    this.setEvent()
+                }
+
+                // 1. 填充this.ele的内容
+                // 不应该直接添加字符串写好的，应该以创建节点的形式书写，一个一个自己添加样式
+                setContent(txt) {
+                    this.ele.innerHTML = `<div class="top">标题
+            <span class="close">x</span>
+        </div>
+        <div class="container">
+            <p>${txt}</p>
+        </div>
+        <div class="btns">
+            <button class="confirm">确定</button>
+            <button class="concel">取消</button>
+        </div>`
+
+                    // 显示弹框
+                    this.ele.style.display = 'block'
+                }
+
+                // 添加各种事件
+                setEvent() {
+                    console.log(1);
+                    this.ele.addEventListener('click', e => {
+                        e = e || window.event
+                        const target = e.target || e.srcElement
+
+                        console.log(target, '111');
+
+                        // 根据类名判断点击事件
+                        if (target.className === 'close') {
+                            this.ele.style.display = 'none'
+                        }
+
+                        if (target.className === 'confirm') {
+                            this.callback(true)
+                            this.ele.style.display = 'none'
+                        }
+
+                        if (target.className === 'concel') {
+                            this.callback(false)
+                            this.ele.style.display = 'none'
+                        }
+                    })
+                }
+           
+                // 调整顶部背景颜色
+                setTopBgc(bgc) {
+                    this.ele.querySelector('.top').style.backgroundColor = bgc
+                }
+            }
+            // 单例模式代码
+            let instance = null
+
+            return function (options,cb) {
+                if (!instance) {
+                    instance = new Tip()
+                }
+
+                // 接收内容文本
+                instance.setContent(options.txt || `你好，EEVEE`)
+                // 调整顶部背景颜色
+                instance.setTopBgc(options.bgc || 'pink')
+                instance.callback = cb || function() {}
+                return instance
+            }
+        })()
+
+        const tip1 = new Tip({
+            txt: '我是EEVEE',
+            bgc: 'red'
+        },function(res) {
+            console.log(`打印结果：${res}`);
+        })
+    </script>
+</body>
+
+</html>
